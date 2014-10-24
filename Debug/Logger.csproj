@@ -41,6 +41,8 @@
     <Compile Include="ConsoleTransport.cs" />
     <Compile Include="IFormat.cs" />
     <Compile Include="DefaultFormatter.cs" />
+    <Compile Include="ILog.cs" />
+    <Compile Include="AnsiColor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

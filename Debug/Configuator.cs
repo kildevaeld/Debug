@@ -5,6 +5,7 @@ namespace Debug
 {
 	public class Configuator
 	{
+		public LogLevels LogLevels { get; set; }
 
 		public Config GetConfig() {
 			return GetConfig (null);
@@ -12,31 +13,71 @@ namespace Debug
 
 		public Config GetConfig(string name) {
 			var config = new Config {
-				LogLevels = LogLevels.Debug | LogLevels.Info | LogLevels.Error | LogLevels.Warn,
+				LogLevels = this.LogLevels,
 				Enabled = ParseEnvironment(name)
 			};
 			if (name != null)
 				config.Name = name;
 
+
+			_configs.Add (config);
+
 			return config;
 		}
+
+
 
 		public IFormat Formatter { get; set; }
 
 		private List<ITransport> _transports;
 		public Writer Writer;
 
+		private List<Config> _configs;
+	
 
 		public Configuator ()
 		{
 			_transports = new List<ITransport> ();
-			_transports.Add (new ConsoleTransport ());
-
+			_configs = new List<Config> ();
 			Writer = new Writer (_transports);
 			Formatter = new DefaultFormatter ();
 			Writer.Formatter = Formatter;
 		
 		}
+
+		public void Enable(string name) {
+			var reg = new Regex(name.Replace("*",".*"));
+			_configs.ForEach (x => {
+				if (reg.IsMatch(x.Name)) {
+					x.Enabled = true;
+				}
+			});
+		}
+
+		public void Enable(Type type) {
+			Enable (type.FullName);
+		}
+
+		public void Disable(string name) {
+			var reg = new Regex(name.Replace("*",".*"));
+			_configs.ForEach (x => {
+				if (reg.IsMatch(x.Name)) {
+					x.Enabled = false;
+				}
+			});
+		}
+
+		public void Disable(Type type) {
+			Disable (type.FullName);
+		}
+
+		public T AddTransport<T>() where T: ITransport, new() {
+			var transport = new T ();
+			transport.LogLevels = this.LogLevels;
+			_transports.Add (transport);
+			return transport;
+		}
+
 
 		private bool ParseEnvironment (string name) {
 			if (name == null)
@@ -46,7 +87,7 @@ namespace Debug
 				return false;
 
 			var reg = new Regex(str.Replace("*",".*"));
-			Console.WriteLine (reg);
+
 			return reg.IsMatch (name);
 		}
 

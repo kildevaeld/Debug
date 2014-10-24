@@ -7,7 +7,7 @@ namespace Debug
 
 		public LogLevels LogLevels { get; set; }
 		public string Name { get; set; }
-		public bool Enabled { get; set; }
+		public bool Enabled { get; internal set; }
 		public Config ()
 		{
 		}

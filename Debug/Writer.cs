@@ -16,12 +16,16 @@ namespace Debug
 
 
 		public void Write(LogLevels level, Config config, string message) {
-			if (!config.Enabled)
+
+			if ((!config.Enabled  && level == LogLevels.Debug) 
+				|| Formatter == null)
 				return;
 
-			var str = Formatter.Format (level, message);
 			if (config.Name != null)
-				str = config.Name + "::" + str;
+				message = "(" + config.Name + ")" + " " + message;
+
+			var str = Formatter.Format (level, message);
+
 
 			foreach (var transport in this.GetTransports(level,config)) {
 				transport.Write (str);
@@ -29,6 +33,7 @@ namespace Debug
 		}
 
 		private IEnumerable<ITransport> GetTransports(LogLevels level, Config config) {
+
 			return _transports.Where (x => {
 				return Validate(level,config);
 			});

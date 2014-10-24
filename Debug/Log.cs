@@ -2,21 +2,19 @@
 using System.Collections.Generic;
 namespace Debug
 {
-	public class Log
+	public class Log : ILog
 	{
 
 		public static Configuator Configuation = new Configuator();
 
-		internal static List<Log> Debuggers = new List<Log>();
-
-		public static Log Create(string name) {
+		public static ILog Create(string name) {
 			var config = Configuation.GetConfig (name);
 			var log = new Log (config);
 			return log;
 		}
 
-		public static Log Create(Type name) {
-			return Create (name.Name);
+		public static ILog Create(Type name) {
+			return Create (name.FullName);
 		}
 
 		public Config Config { get; internal set; }

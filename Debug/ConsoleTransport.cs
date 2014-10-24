@@ -4,6 +4,8 @@ namespace Debug
 {
 	public class ConsoleTransport : ITransport
 	{
+		public LogLevels LogLevels { get; set;}
+
 		public ConsoleTransport ()
 		{
 		}
